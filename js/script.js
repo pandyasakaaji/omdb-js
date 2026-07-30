@@ -2,16 +2,14 @@ const baseUrl = `http://www.omdbapi.com/?apikey=3ebbfbc4`
 const getAllMovies = query => `${baseUrl}&s=${query}`
 const getSingleMovie = query => `${baseUrl}&i=${query}`
 const row = document.getElementById('movies')
+const modal = document.getElementById('movie-modal')
 
 fetch(getAllMovies('ben'))
-  .then(res => {
-    return res.json()
-  })
+  .then(res => res.json())
   .then(res => {
     const movies = res.Search
     let cards = ''
 
-    console.log(movies)
     movies.forEach(movie => {
       cards += ` <div class="col-md-4 my-3">
         <div class="card">
@@ -25,7 +23,7 @@ fetch(getAllMovies('ben'))
       </div> `
     })
 
-    row.insertAdjacentHTML("beforeend", cards)
+    row.innerHTML = cards
   })
   .catch(err => console.log(err))
 
@@ -34,6 +32,28 @@ row.addEventListener('click', event => {
     const query = event.target.dataset.imdbid
     fetch(getSingleMovie(query))
       .then(res => res.json())
-      .then(res => console.log(res))
+      .then(res => {
+        let modalBody = `<div class="container-fluid">
+              <div class="row">
+                <div class="col-md-3">
+                  <img src="${res.Poster}" alt="" class="img-fluid">
+                </div>
+                <div class="col-md">
+                  <ul class="list-group">
+                    <li class="list-group-item">
+                      <h4>${res.Title}</h4>
+                    </li>
+                    <li class="list-group-item"><strong>Director: ${res.Director}</strong></li>
+                    <li class="list-group-item"><strong>Actor: ${res.Actors}</strong></li>
+                    <li class="list-group-item"><strong>Writer: ${res.Writer}</strong></li>
+                    <li class="list-group-item"><strong>Plot: <br></strong> ${res.Plot}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>`
+
+        modal.innerHTML = modalBody
+      })
+      .catch(err => console.log(err))
   }
 })
