@@ -20,7 +20,7 @@ fetch(fullUrl)
           <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
             <h5 class="card-title">${movie.Title}</h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">${movie.Year}</h6>
-            <a href="#" class="btn btn-primary">Show Details</a>
+            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal">Show Details</a>
           </div>
         </div>
       </div> `
