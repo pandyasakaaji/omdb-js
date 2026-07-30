@@ -1,15 +1,14 @@
 const baseUrl = `http://www.omdbapi.com/?apikey=3ebbfbc4`
-const separator = '&s='
-const query = 'ben'
-const fullUrl = `${baseUrl}${separator}${query}`
+const getAllMovies = query => `${baseUrl}&s=${query}`
+const getSingleMovie = query => `${baseUrl}&i=${query}`
+const row = document.getElementById('movies')
 
-fetch(fullUrl)
+fetch(getAllMovies('ben'))
   .then(res => {
     return res.json()
   })
   .then(res => {
     const movies = res.Search
-    const row = document.getElementById('movies')
     let cards = ''
 
     console.log(movies)
@@ -20,7 +19,7 @@ fetch(fullUrl)
           <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
             <h5 class="card-title">${movie.Title}</h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">${movie.Year}</h6>
-            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal">Show Details</a>
+            <a class="btn btn-primary movie-details-button" data-bs-toggle="modal" data-bs-target="#movieModal" data-imdbid="${movie.imdbID}">Show Details</a>
           </div>
         </div>
       </div> `
@@ -29,4 +28,12 @@ fetch(fullUrl)
     row.insertAdjacentHTML("beforeend", cards)
   })
   .catch(err => console.log(err))
-  .finally(console.log('executed'))
+
+row.addEventListener('click', event => {
+  if (event.target.classList.contains('movie-details-button')) {
+    const query = event.target.dataset.imdbid
+    fetch(getSingleMovie(query))
+      .then(res => res.json())
+      .then(res => console.log(res))
+  }
+})
