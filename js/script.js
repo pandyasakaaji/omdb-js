@@ -3,6 +3,8 @@ const getAllMovies = query => `${baseUrl}&s=${query}`
 const getSingleMovie = query => `${baseUrl}&i=${query}`
 const row = document.getElementById('movies')
 const modal = document.getElementById('movie-modal')
+const search = document.querySelector('.search-button')
+let input = document.querySelector('.input-keyword')
 
 fetch(getAllMovies('ben'))
   .then(res => res.json())
@@ -29,6 +31,24 @@ row.addEventListener('click', event => {
       })
       .catch(err => console.log(err))
   }
+})
+
+search.addEventListener('click', () => {
+  console.log(input.value)
+
+  fetch(getAllMovies(input.value))
+    .then(res => res.json())
+    .then(res => {
+      const movies = res.Search
+      let cards = ''
+
+      movies.forEach(movie => {
+        cards += showCards(movie)
+      })
+
+      row.innerHTML = cards
+    })
+    .catch(err => console.log(err))
 })
 
 function showCards(movie) {
