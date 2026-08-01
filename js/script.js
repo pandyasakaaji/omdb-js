@@ -4,7 +4,7 @@ const getSingleMovie = query => `${baseUrl}&i=${query}`
 const row = document.getElementById('movies')
 const modal = document.getElementById('movie-modal')
 const search = document.querySelector('.search-button')
-let input = document.querySelector('.input-keyword')
+const input = document.querySelector('.input-keyword')
 
 fetch(getAllMovies('ben'))
   .then(res => res.json())
@@ -33,22 +33,46 @@ row.addEventListener('click', event => {
   }
 })
 
-search.addEventListener('click', () => {
-  console.log(input.value)
+// search button
+// search.addEventListener('click', () => {
+//   console.log(input.value)
+//
+//   fetch(getAllMovies(input.value))
+//     .then(res => res.json())
+//     .then(res => {
+//       const movies = res.Search
+//       let cards = ''
+//
+//       movies.forEach(movie => {
+//         cards += showCards(movie)
+//       })
+//
+//       row.innerHTML = cards
+//     })
+//     .catch(err => console.log(err))
+// })
 
-  fetch(getAllMovies(input.value))
-    .then(res => res.json())
-    .then(res => {
-      const movies = res.Search
-      let cards = ''
+// auto search
+let timer
 
-      movies.forEach(movie => {
-        cards += showCards(movie)
+input.addEventListener('input', () => {
+  clearTimeout(timer)
+
+  timer = setTimeout(() => {
+    fetch(getAllMovies(input.value))
+      .then(res => res.json())
+      .then(res => {
+        const movies = res.Search
+        let cards = ''
+
+        movies.forEach(movie => {
+          cards += showCards(movie)
+        })
+
+        row.innerHTML = cards
       })
-
-      row.innerHTML = cards
-    })
-    .catch(err => console.log(err))
+      .catch(err => console.log(err))
+  }, 1000)
 })
 
 function showCards(movie) {
