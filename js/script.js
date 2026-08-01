@@ -1,79 +1,50 @@
 const baseUrl = `http://www.omdbapi.com/?apikey=3ebbfbc4`
-const getAllMovies = query => `${baseUrl}&s=${query}`
-const getSingleMovie = query => `${baseUrl}&i=${query}`
 const row = document.getElementById('movies')
 const modal = document.getElementById('movie-modal')
 const search = document.querySelector('.search-button')
 const input = document.querySelector('.input-keyword')
 
-fetch(getAllMovies('ben'))
-  .then(res => res.json())
-  .then(res => {
-    const movies = res.Search
-    let cards = ''
+// handle click button
+search.addEventListener('click', handleSearch)
 
-    movies.forEach(movie => {
-      cards += showCards(movie)
-    })
-
-    row.innerHTML = cards
-  })
-  .catch(err => console.log(err))
-
-row.addEventListener('click', event => {
-  if (event.target.classList.contains('movie-details-button')) {
-    const query = event.target.dataset.imdbid
-    fetch(getSingleMovie(query))
-      .then(res => res.json())
-      .then(res => {
-        let modalBody = showModal(res)
-        modal.innerHTML = modalBody
-      })
-      .catch(err => console.log(err))
+// handle movie details button
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('movie-details-button')) {
+    updateMovieDetails(e.target.dataset.imdbid)
   }
 })
 
-// search button
-// search.addEventListener('click', () => {
-//   console.log(input.value)
-//
-//   fetch(getAllMovies(input.value))
-//     .then(res => res.json())
-//     .then(res => {
-//       const movies = res.Search
-//       let cards = ''
-//
-//       movies.forEach(movie => {
-//         cards += showCards(movie)
-//       })
-//
-//       row.innerHTML = cards
-//     })
-//     .catch(err => console.log(err))
-// })
+async function handleSearch() {
+  let movies = await getMovies(input.value)
+  updateCards(movies)
+}
 
-// auto search
-let timer
+async function getMovies(keywords) {
+  const res = await fetch(`${baseUrl}&s=${keywords}`)
+  const data = await res.json()
+  return data.Search
+}
 
-input.addEventListener('input', () => {
-  clearTimeout(timer)
+async function getMovieDetails(imdbid) {
+  const res = await fetch(`${baseUrl}&i=${imdbid}`)
+  const data = await res.json()
+  return data
+}
 
-  timer = setTimeout(() => {
-    fetch(getAllMovies(input.value))
-      .then(res => res.json())
-      .then(res => {
-        const movies = res.Search
-        let cards = ''
+function updateCards(movies) {
+  let cards = ''
 
-        movies.forEach(movie => {
-          cards += showCards(movie)
-        })
+  movies && movies.forEach(movie => {
+    cards += showCards(movie)
+  });
 
-        row.innerHTML = cards
-      })
-      .catch(err => console.log(err))
-  }, 1000)
-})
+  row.innerHTML = cards
+}
+
+async function updateMovieDetails(imdbid) {
+  const movieDetails = await getMovieDetails(imdbid)
+  modal.innerHTML = showModal(movieDetails)
+}
 
 function showCards(movie) {
   return `<div class="col-md-4 my-3">
